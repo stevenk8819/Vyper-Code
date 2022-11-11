@@ -1,0 +1,74 @@
+#players: address[10000]
+#losers: address[10000]
+_playersC: uint256
+players: DynArray[address, 1000]
+_losersC: uint256 
+losers: DynArray[address, 1000]
+
+
+_odds: uint256
+playersTurn: uint256
+creator: address
+
+
+
+@external
+def __init__(_creator1: address):
+    self.creator = _creator1
+    
+@external
+def setOdds(odds1: uint256):
+    if msg.sender == self.creator:
+        self._odds = odds1
+
+@external
+def addPlayer(_player: address):
+    isPlaying: bool = False
+    hasLost: bool = False
+
+    #check if alr player
+    for i in self.players:
+        if (i == _player):
+            isPlaying = True
+    #check if lost
+    for i in self.losers:
+        if (i == _player):
+            hasLost = True
+    #add if not either 
+    if (isPlaying != True):
+        if (hasLost != True):
+            self.players.append(_player)
+
+
+@internal
+def lose(_loser: address):
+    #adds player to loser list 
+    self.losers.append(_loser)
+        #self.losers[self._losersC] = _loser #add then increment counter
+        #self._losersC += 1
+    #clears players list 
+    for i in range(1000):
+        self.players.pop()
+    
+
+@internal
+def random() -> (uint256):
+    return self._odds - 1 #doesn't have to be fair
+
+
+
+@external
+def play ():
+    num: uint256 = self.random()
+    if (num == 1):
+        self.lose(self.players[self.playersTurn])
+    if (num != 1):
+        self.playersTurn += 1
+
+    
+@external
+def isALoser (person: address) -> (bool):
+    for i in self.losers:
+        if (i == person):
+            return True
+    return False
