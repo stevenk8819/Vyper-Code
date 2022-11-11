@@ -14,7 +14,7 @@ creator: address
 
 @external
 def __init__(_creator1: address):
-    self.creator = _creator1
+    self.creator = msg.sender
     
 @external
 def setOdds(odds1: uint256):
